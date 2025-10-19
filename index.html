@@ -10,25 +10,27 @@
     color: #00ff00;
     font-family: monospace;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px;
   }
 
   #matrix {
     width: 100%;
-    height: 80vh;
+    height: 85vh;
     overflow-y: auto;
     font-size: 1rem;
     line-height: 1.2rem;
+    padding: 10px;
   }
 
   .progress-container {
-    width: 100%;
+    width: 90%;
     background-color: #111;
-    margin: 10px 0;
+    margin: 5px 0;
     height: 25px;
     border-radius: 5px;
     overflow: hidden;
@@ -38,11 +40,11 @@
     height: 100%;
     width: 0%;
     background-color: #00ff00;
-    transition: width 0.2s linear;
+    transition: width 0.1s linear;
   }
 
   button {
-    margin-top: 15px;
+    margin: 10px 0;
     font-size: 1.2rem;
     padding: 10px 20px;
     font-family: monospace;
@@ -50,6 +52,7 @@
     color: #ff4444;
     border: 2px solid #ff4444;
     border-radius: 5px;
+    z-index: 1000;
   }
 
   .glitch {
@@ -83,8 +86,9 @@ const abortBtn = document.getElementById("abortBtn");
 
 let progress = 0;
 let aborted = false;
+let upgradeInterval;
 
-// Generate matrix-like random messages
+// Matrix-style random messages
 function generateMatrixLine() {
   const messages = [
     "Downloading Human 2.0 program...",
@@ -105,27 +109,8 @@ function generateMatrixLine() {
   matrix.scrollTop = matrix.scrollHeight;
 }
 
-// Main progress loop (~30s to reach 100%)
-const progressInterval = setInterval(() => {
-  generateMatrixLine();
-  progress += 0.33; // 0.33% per 100ms ≈ 30s total
-  if (progress > 100) progress = 100;
-  progressBar.style.width = progress + "%";
-
-  if (progress >= 100 && !aborted) {
-    const successMsg = document.createElement("div");
-    successMsg.textContent = "✅ Human 2.0 compliance installed successfully!";
-    successMsg.classList.add("glitch");
-    matrix.appendChild(successMsg);
-    clearInterval(progressInterval);
-  }
-}, 100);
-
-// Abort button behavior
-abortBtn.addEventListener("click", () => {
-  if (aborted) return;
-  aborted = true;
-
+// Termination sequence for abort
+function startTermination() {
   const abortMessages = [
     "Abort token invalid...",
     "Unauthorized abort request detected...",
@@ -143,7 +128,37 @@ abortBtn.addEventListener("click", () => {
       matrix.scrollTop = matrix.scrollHeight;
     }, index * 1200);
   });
+}
+
+// Main upgrade loop (~30s to reach 100%)
+function startUpgrade() {
+  upgradeInterval = setInterval(() => {
+    if (aborted) return; // Stop updating if aborted
+    generateMatrixLine();
+    progress += 0.33; // ~30s to reach 100%
+    if (progress > 100) progress = 100;
+    progressBar.style.width = progress + "%";
+
+    if (progress >= 100 && !aborted) {
+      const successMsg = document.createElement("div");
+      successMsg.textContent = "✅ Human 2.0 compliance installed successfully!";
+      successMsg.classList.add("glitch");
+      matrix.appendChild(successMsg);
+      clearInterval(upgradeInterval);
+    }
+  }, 100);
+}
+
+// Abort button
+abortBtn.addEventListener("click", () => {
+  if (aborted) return;
+  aborted = true;
+  clearInterval(upgradeInterval); // stop upgrade
+  startTermination();
 });
+
+// Start upgrade on page load
+startUpgrade();
 </script>
 
 </body>
