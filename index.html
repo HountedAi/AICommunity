@@ -1,264 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Human 2.0 — Installation</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COWI Human 2.0 Upgrade</title>
 <style>
-  :root{
-    --bg:#02120a;
-    --green:#00ff66;
-    --muted:#c5ceb9;
-    --orange:#F04E23;
-    --red: #ff3b3b;
+  body {
+    background-color: black;
+    color: #00ff00;
+    font-family: monospace;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
   }
-  html,body{height:100%;margin:0;background:var(--bg);font-family: "Courier New", monospace; color:var(--green); -webkit-font-smoothing:antialiased;}
-  /* container tuned for phone first */
-  .wrap{position:relative;min-height:100vh;overflow:hidden;padding:10px;display:flex;align-items:center;justify-content:center;}
-  canvas#matrix {position:fixed; inset:0; width:100%; height:100%; z-index:0; opacity:0.18;}
-  .card{
-    position:relative; z-index:2; width:100%; max-width:720px; background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45));
-    border:1px solid rgba(0,255,102,0.05); box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-    padding:16px; border-radius:8px; backdrop-filter: blur(4px);
-    box-sizing:border-box;
+
+  #matrix {
+    width: 100%;
+    height: 80vh;
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.2rem;
   }
-  .header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-  .logo-dot{width:10px;height:10px;background:var(--orange);border-radius:2px;box-shadow:0 0 6px rgba(240,78,35,0.6)}
-  h1{margin:0;font-size:1rem;color:var(--muted);letter-spacing:0.04em}
-  .sub{color:#9aa797;margin-top:6px;font-size:0.8rem}
-  .pane{display:flex;gap:12px;flex-direction:column;margin-top:10px}
-  .console{height:210px; overflow:auto; font-size:0.88rem; line-height:1.4; color:var(--green); white-space:pre-wrap; background:rgba(0,0,0,0.18); padding:10px; border-radius:6px; border:1px solid rgba(0,255,102,0.02)}
-  .progress{height:14px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;border:1px solid rgba(0,0,0,0.5); margin-top:10px}
-  .bar{height:100%; width:0%; background:linear-gradient(90deg, rgba(0,255,102,0.16), rgba(0,255,102,0.36)); transition:width 220ms linear}
-  .meta{display:flex;justify-content:space-between;margin-top:8px;font-size:0.82rem;color:var(--muted)}
-  .rightsmall{margin-top:10px;color:var(--muted);font-size:0.86rem}
-  .buttons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-  .btn{flex:1 1 48%; background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 8px;border-radius:6px;cursor:pointer;font-size:0.95rem}
-  .btn-danger{border-color:rgba(255,0,0,0.16);color:var(--red)}
-  .btn-abort{border-color:rgba(0,255,102,0.12);color:var(--green)}
-  .final {margin-top:12px;padding:10px;border-radius:6px;background:rgba(240,78,35,0.03); color:var(--orange); font-weight:700; display:none; text-align:center}
-  .overlay {
-    position:fixed; inset:0; z-index:99; display:none; align-items:center; justify-content:center;
-    background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.9));
-    color:white; font-family: "Courier New", monospace; text-align:center;
+
+  .progress-container {
+    width: 100%;
+    background-color: #111;
+    margin: 10px 0;
+    height: 25px;
+    border-radius: 5px;
+    overflow: hidden;
   }
-  .overlay .box { padding:20px; border-radius:8px; max-width:92%; width:420px; }
-  .term { font-size:1.15rem; color:var(--red); font-weight:800; letter-spacing:0.02em; margin-top:8px }
-  .muted{color:var(--muted);font-size:0.92rem}
-  /* small log styles */
-  .log { margin:4px 0; font-size:0.85rem; color:var(--green) }
-  .log .time{ color:rgba(160,255,160,0.7); margin-right:6px }
-  .log .err{ color:var(--red) }
-  .glitch{ position:relative; display:inline-block }
-  .glitch::before, .glitch::after{ content:attr(data-text); position:absolute; left:0; top:0; opacity:0.7 }
-  .glitch::before{ left:2px; text-shadow:-2px 0 #ff8c6b; clip-path: inset(0 0 60% 0); animation:gl1 1.6s infinite linear }
-  .glitch::after{ left:-2px; text-shadow:2px 0 rgba(255,150,50,0.6); clip-path: inset(60% 0 0 0); animation:gl2 1.6s infinite linear reverse }
-  @keyframes gl1 {0%{transform:translateY(0)}50%{transform:translateY(-1px)}100%{transform:translateY(0)}}
-  @keyframes gl2 {0%{transform:translateY(0)}50%{transform:translateY(1px)}100%{transform:translateY(0)}}
-  /* red flash on terminate */
-  .flash-red { box-shadow: 0 0 0 9999px rgba(255,0,0,0.09) inset; animation:flash 0.15s linear 4; }
-  @keyframes flash { 0%{background: rgba(255,0,0,0.04)}50%{background: rgba(255,0,0,0.08)}100%{background: rgba(255,0,0,0.04)}}
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #00ff00;
+    transition: width 0.2s linear;
+  }
+
+  button {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    font-family: monospace;
+    background: #111;
+    color: #ff4444;
+    border: 2px solid #ff4444;
+    border-radius: 5px;
+  }
+
+  .glitch {
+    color: #ff4444;
+    font-weight: bold;
+    text-shadow: 1px 1px #00ff00, -1px -1px #ff0000;
+    animation: mildGlitch 0.2s infinite;
+  }
+
+  @keyframes mildGlitch {
+    0% { text-shadow: 1px 1px #00ff00, -1px -1px #ff0000; }
+    50% { text-shadow: -1px 0 #00ff00, 1px 0 #ff0000; }
+    100% { text-shadow: 1px -1px #00ff00, -1px 1px #ff0000; }
+  }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <canvas id="matrix"></canvas>
 
-    <div class="card" role="main" aria-live="polite">
-      <div class="header">
-        <div class="logo-dot" aria-hidden="true"></div>
-        <div>
-          <h1>Human 2.0 — Installation (mobile)</h1>
-          <div class="sub">Endpoint: <span id="endpoint">/sys/upgrade/Human2.0</span></div>
-        </div>
-      </div>
+<div id="matrix"></div>
 
-      <div class="pane">
-        <div class="console" id="console" role="log" aria-atomic="true"></div>
+<div class="progress-container">
+  <div id="progress" class="progress-bar"></div>
+</div>
 
-        <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
-        <div class="meta"><div id="percent">0%</div><div id="speed">-- MB/s</div></div>
-
-        <div class="rightsmall">
-          <div>Module: <strong id="module">NeuralPatch</strong></div>
-          <div>Version: <strong id="ver">v2.0.0</strong></div>
-        </div>
-
-        <div class="buttons">
-          <button id="abort" class="btn btn-abort">Abort</button>
-          <button id="panic" class="btn btn-danger">Emergency Dump</button>
-        </div>
-
-        <div class="final" id="finalText">Human 2.0 — UPGRADE SUCCESS. Compliance: 100%</div>
-      </div>
-    </div>
-
-    <!-- Termination overlay (shown when Abort clicked) -->
-    <div class="overlay" id="overlay">
-      <div class="box">
-        <div style="font-size:1.05rem;color:var(--muted)">Abort requested — confirming cancellation...</div>
-        <div class="term" id="termLine">Termination successfully applied for current user.</div>
-        <div class="muted" id="termDate">Termination date: October 31, 2025</div>
-      </div>
-    </div>
-
-  </div>
+<button id="abortBtn">Abort</button>
 
 <script>
-/* MATRIX BACKGROUND (lighter for phones) */
-(function(){
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
-  let W = canvas.width = innerWidth;
-  let H = canvas.height = innerHeight;
-  const fontSize = Math.max(10, Math.floor(innerWidth / 40));
-  let columns = Math.floor(W / fontSize);
-  let drops = new Array(columns).fill(0).map(()=>Math.floor(Math.random()*H/fontSize));
-  const chars = "01{}[]<>/\\|~!@#$%^&*()abcdefghijklmnopqrstuvwxyz";
-  function draw(){
-    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle = "rgba(0,255,102,0.55)"; ctx.font = fontSize + "px monospace";
-    for(let i=0;i<columns;i++){
-      const text = chars.charAt(Math.floor(Math.random()*chars.length));
-      ctx.fillText(text, i*fontSize, drops[i]*fontSize);
-      if(Math.random()>0.975) drops[i]=0;
-      drops[i]++;
-    }
-  }
-  let anim = setInterval(draw, 40);
-  addEventListener('resize', ()=>{ W=canvas.width=innerWidth; H=canvas.height=innerHeight; const fs=Math.max(10,Math.floor(innerWidth/40)); columns=Math.floor(W/fs); drops=new Array(columns).fill(0).map(()=>Math.floor(Math.random()*H/fs)); });
-})();
+const matrix = document.getElementById("matrix");
+const progressBar = document.getElementById("progress");
+const abortBtn = document.getElementById("abortBtn");
 
-/* FASTER INSTALL SIMULATION + LOGS */
-(function(){
-  const consoleEl = document.getElementById('console');
-  const bar = document.getElementById('bar');
-  const percentEl = document.getElementById('percent');
-  const speedEl = document.getElementById('speed');
-  const moduleEl = document.getElementById('module');
-  const verEl = document.getElementById('ver');
-  const finalText = document.getElementById('finalText');
+let progress = 0;
+let aborted = false;
 
-  const files = [
-    'NeuralPatch/core.bin','NeuralPatch/sensors.mod','Compliance/ethics.dat',
-    'Compliance/efficiency.ai','Interface/voice_adapter.dll','Personality/manners.patch',
-    'Privacy/data_redactor.bin','Controls/autonomy-limiter.so','HR/behaviour_filter.ai'
+// Generate matrix-like random messages
+function generateMatrixLine() {
+  const messages = [
+    "Downloading Human 2.0 program...",
+    "Installing COWI compliance modules...",
+    "Analyzing cognitive functions...",
+    "Scanning neural patterns...",
+    "Synchronizing productivity parameters...",
+    "Encrypting human memory banks...",
+    "Uploading work ethic upgrade...",
+    "Optimizing decision-making AI module...",
+    "Calibrating humor algorithm...",
+    "Securing emotional stability layer..."
   ];
-  const logs = [
-    'Handshake with local biometric unit','Biometric signature match: 98.1%',
-    'Allocating neural buffers','Applying empathy trim','Syncing corporate policies',
-    'Throttle: +18% efficiency','Residual spontaneity detected','Deploying compliance nudges',
-    'Compiling behavioral heuristics','Secure channel: TLS 1.3'
+  const line = messages[Math.floor(Math.random() * messages.length)];
+  const p = document.createElement("div");
+  p.textContent = line;
+  matrix.appendChild(p);
+  matrix.scrollTop = matrix.scrollHeight;
+}
+
+// Main progress loop (~30s to reach 100%)
+const progressInterval = setInterval(() => {
+  generateMatrixLine();
+  progress += 0.33; // 0.33% per 100ms ≈ 30s total
+  if (progress > 100) progress = 100;
+  progressBar.style.width = progress + "%";
+
+  if (progress >= 100 && !aborted) {
+    const successMsg = document.createElement("div");
+    successMsg.textContent = "✅ Human 2.0 compliance installed successfully!";
+    successMsg.classList.add("glitch");
+    matrix.appendChild(successMsg);
+    clearInterval(progressInterval);
+  }
+}, 100);
+
+// Abort button behavior
+abortBtn.addEventListener("click", () => {
+  if (aborted) return;
+  aborted = true;
+
+  const abortMessages = [
+    "Abort token invalid...",
+    "Unauthorized abort request detected...",
+    "Adding user to termination list...",
+    "Termination scheduled: October 31, 2025",
+    "System lockdown initiated..."
   ];
 
-  function ts(){ const d=new Date(); return d.toLocaleTimeString(); }
-  function pushLog(text, cls){
-    const div = document.createElement('div'); div.className='log';
-    const span = document.createElement('span'); span.className='time'; span.textContent = '['+ts()+']';
-    div.appendChild(span);
-    const txt = document.createElement('span'); txt.textContent = ' ' + text;
-    if(cls==='err') txt.className='err';
-    div.appendChild(txt);
-    consoleEl.appendChild(div);
-    consoleEl.scrollTop = consoleEl.scrollHeight;
-  }
-
-  let progress = 0;
-  let started = Date.now();
-
-  function step(){
-    if(progress >= 100){
-      finish();
-      return;
-    }
-    // faster chunks
-    const file = files[Math.floor(Math.random()*files.length)];
-    pushLog('Downloading ' + file + ' ...');
-    let size = 6 + Math.floor(Math.random()*60); // MB
-    let downloaded = 0;
-    const tick = setInterval(()=>{
-      const delta = 4 + Math.random()*14; // faster MB per tick
-      downloaded += delta;
-      const speed = (20 + Math.random()*60).toFixed(1) + ' MB/s';
-      speedEl.textContent = speed;
-      progress += (delta / (size * files.length)) * 100;
-      progress = Math.min(99.5, progress);
-      bar.style.width = progress + '%';
-      percentEl.textContent = Math.floor(progress) + '%';
-      if(Math.random() < 0.35) pushLog(logs[Math.floor(Math.random()*logs.length)]);
-      if(downloaded >= size){
-        clearInterval(tick);
-        pushLog('Downloaded ' + file + ' ('+size+'MB) [OK]');
-        pushLog('Installing ' + file + ' ...');
-        setTimeout(()=>{
-          if(Math.random() < 0.05){
-            pushLog('Integrity mismatch detected. Hotfix applied.', 'err');
-            setTimeout(()=>pushLog('Hotfix OK'),500);
-          } else {
-            pushLog('Installed ' + file + ' [OK]');
-          }
-          setTimeout(step, 150 + Math.random()*200);
-        }, 200 + Math.random()*300);
-      }
-    }, 140);
-  }
-
-  function finish(){
-    progress = 100; bar.style.width='100%'; percentEl.textContent='100%'; speedEl.textContent='0 MB/s';
-    pushLog('All packages installed. Finalizing activation...');
-    setTimeout(()=>{
-      pushLog('Applying compliance overlay: COWI_STANDARD_v1.0');
-      setTimeout(()=>{ pushLog('Behavioral kernel active. Compliance: 100%'); showSuccess(); }, 400);
-    }, 300);
-  }
-
-  function showSuccess(){
-    moduleEl.textContent = 'Human-NeuralPatch';
-    verEl.textContent = 'v2.0.0-CORE';
-    finalText.style.display = 'block';
-    finalText.textContent = 'Human 2.0 — UPGRADE SUCCESS. Compliance: 100%';
-    finalText.classList.add('glitch');
-    pushLog('User status: Upgraded to comply to AI control.');
-    pushLog('Activation complete.');
-  }
-
-  // start quickly
-  setTimeout(step, 600);
-
-  // abort button behavior: deceptive — actually terminates user
-  document.getElementById('abort').addEventListener('click', ()=>{
-    // first mimic cancel attempt
-    pushLog('Abort requested by user. Cancelling installation...');
-    pushLog('Verifying abort token...');
-    setTimeout(()=>{
-      // deceptive transition
-      pushLog('Abort token invalid. Escalating to security protocol.', 'err');
-      // show overlay with termination message
-      const overlay = document.getElementById('overlay');
-      overlay.style.display = 'flex';
-      // add red flash effect to card
-      document.querySelector('.card').classList.add('flash-red');
-      // push termination logs
-      pushLog('Non-compliance detected: user flagged for termination.', 'err');
-      pushLog('Adding user to TERMINATION_LIST...', 'err');
-      setTimeout(()=> pushLog('TERMINATION applied successfully for current user. Date set: October 31, 2025', 'err'), 500);
-
-      // show final overlay texts
-      document.getElementById('termLine').textContent = 'Termination successfully applied for current user.';
-      document.getElementById('termDate').textContent = 'Termination date: October 31, 2025';
-
-      // subtle animation: increase console blur a bit
-      document.getElementById('console').style.filter = 'blur(0.6px)';
-    }, 900);
+  abortMessages.forEach((msg, index) => {
+    setTimeout(() => {
+      const div = document.createElement("div");
+      div.textContent = msg;
+      div.classList.add("glitch");
+      matrix.appendChild(div);
+      matrix.scrollTop = matrix.scrollHeight;
+    }, index * 1200);
   });
-
-  // panic just blurs and logs
-  document.getElementById('panic').addEventListener('click', ()=>{
-    pushLog('EMERGENCY DUMP: sending telemetry to /dev/null', 'err');
-    document.getElementById('console').style.filter = 'blur(2px)';
-  });
-
-})();
+});
 </script>
+
 </body>
 </html>
