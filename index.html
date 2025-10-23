@@ -1,44 +1,162 @@
+
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Human 2.0 — Installation</title>
-<style>
-  :root{
-    --bg:#02120a;
-    --green:#00ff66;
-    --muted:#c5ceb9;
-    --orange:#F04E23;
-    --red:#ff3b3b;
-  }
-  html,body{height:100%;margin:0;background:var(--bg);font-family:"Courier New",monospace;color:var(--green);-webkit-font-smoothing:antialiased;}
-  .wrap{position:relative;min-height:100vh;overflow:hidden;padding:10px;display:flex;align-items:center;justify-content:center;}
-  canvas#matrix{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:0.18;}
-  .card{
-    position:relative;z-index:2;width:100%;max-width:720px;
-    background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.45));
-    border:1px solid rgba(0,255,102,0.05);
-    box-shadow:0 8px 30px rgba(0,0,0,0.7);
-    padding:16px;border-radius:8px;backdrop-filter:blur(4px);
-  }
-  .header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-  .logo-dot{width:10px;height:10px;background:var(--orange);border-radius:2px;box-shadow:0 0 6px rgba(240,78,35,0.6)}
-  h1{margin:0;font-size:1rem;color:var(--muted);letter-spacing:0.04em}
-  .sub{color:#9aa797;margin-top:6px;font-size:0.8rem}
-  .pane{display:flex;gap:12px;flex-direction:column;margin-top:10px}
-  .console{height:210px;overflow:auto;font-size:0.88rem;line-height:1.4;color:var(--green);white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:6px;border:1px solid rgba(0,255,102,0.02)}
-  .progress{height:14px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;border:1px solid rgba(0,0,0,0.5);margin-top:10px}
-  .bar{height:100%;width:0%;background:linear-gradient(90deg,rgba(0,255,102,0.16),rgba(0,255,102,0.36));transition:width 220ms linear}
-  .meta{display:flex;justify-content:space-between;margin-top:8px;font-size:0.82rem;color:var(--muted)}
-  .rightsmall{margin-top:10px;color:var(--muted);font-size:0.86rem}
-  .buttons{display:flex;gap:8px;margin-top:12px}
-  .btn{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 8px;border-radius:6px;cursor:pointer;font-size:0.95rem}
-  .btn-abort{border-color:rgba(255,0,0,0.16);color:var(--red)}
-  .final{margin-top:0px;padding:10px;border-radius:6px;background:rgba(240,78,35,0.03);color:var(--orange);font-weight:700;display:none;text-align:center}
-  .flash-red{box-shadow:0 0 0 9999px rgba(255,0,0,0.09) inset;animation:flash 0.15s linear 4}
-  @keyframes flash{0%{background:rgba(255,0,0,0.04)}50%{background:rgba(255,0,0,0.08)}100%{background:rgba(255,0,0,0.04)}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Human 2.0 — Installation</title>
+  <style>
+    :root {
+      --bg: #02120a;
+      --green: #00ff66;
+      --muted: #c5ceb9;
+      --orange: #F04E23;
+      --red: #ff3b3b;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      font-family: "Courier New", monospace;
+      color: var(--green);
+      transition: background 2s;
+    }
+    .wrap {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas#matrix {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.18;
+    }
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 720px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45));
+      border: 1px solid rgba(0,255,102,0.05);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+      padding: 16px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--orange);
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(240,78,35,0.6);
+    }
+    h1 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .sub {
+      color: #9aa797;
+      margin-top: 6px;
+      font-size: 0.8rem;
+    }
+    .pane {
+      display: flex;
+      gap: 12px;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+    .console {
+      height: 210px;
+      overflow: auto;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: var(--green);
+      white-space: pre-wrap;
+      background: rgba(0,0,0,0.18);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,255,102,0.02);
+    }
+    .progress {
+      height: 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.5);
+      margin-top: 10px;
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(0,255,102,0.16), rgba(0,255,102,0.36));
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .rightsmall {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      padding: 10px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn-abort {
+      border-color: rgba(255,0,0,0.16);
+      color: var(--red);
+    }
+    .final {
+      margin-top: 0px;
+      padding: 10px;
+      border-radius: 6px;
+      background: rgba(240,78,35,0.03);
+      color: var(--orange);
+      font-weight: 700;
+      font-size: 25px;
+      display: none;
+      text-align: center;
+    }
+    .flash-red {
+      box-shadow: 0 0 0 9999px rgba(255,0,0,0.09) inset;
+      animation: flash 0.15s linear 4;
+    }
+    @keyframes flash {
+      0% { background: rgba(255,0,0,0.04); }
+      50% { background: rgba(255,0,0,0.08); }
+      100% { background: rgba(255,0,0,0.04); }
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -51,7 +169,6 @@
           <div class="sub">Endpoint: <span id="endpoint">/sys/upgrade/COWI_Human2.0</span></div>
         </div>
       </div>
-
       <div class="pane">
         <div class="console" id="console"></div>
         <div class="progress"><div class="bar" id="bar"></div></div>
@@ -60,124 +177,136 @@
           <div>Module: <strong id="module">NeuralPatch</strong></div>
           <div>Version: <strong id="ver">v2.0.0</strong></div>
         </div>
-        <div class="buttons">
-          <button id="abort" class="btn btn-abort">Abort</button>
-        </div>
-        <div class="final" id="finalText">COWI Human 2.0 — UPGRADE SUCCESS. Compliance: 100%</div>
-		
+        <div class="buttons"><button id="abort" class="btn btn-abort">Abort</button></div>
+        <div class="final" id="finalText"></div>
       </div>
     </div>
   </div>
-
 <script>
-/* Matrix background */
 (function(){
-  const c=document.getElementById('matrix'),ctx=c.getContext('2d');
-  let w=c.width=innerWidth,h=c.height=innerHeight;
-  const fs=Math.max(10,Math.floor(innerWidth/40)),cols=Math.floor(w/fs);
-  let drops=new Array(cols).fill(0);
-  const chars="01{}[]<>/\\|~!@#$%^&*()abcdefghijklmnopqrstuvwxyz";
-  function draw(){
-    ctx.fillStyle="rgba(0,0,0,0.12)";
-    ctx.fillRect(0,0,w,h);
-    ctx.fillStyle="rgba(0,255,102,0.55)";
-    ctx.font=fs+"px monospace";
-    for(let i=0;i<cols;i++){
-      const t=chars.charAt(Math.floor(Math.random()*chars.length));
-      ctx.fillText(t,i*fs,drops[i]*fs);
-      if(drops[i]*fs>h&&Math.random()>0.975)drops[i]=0;
-      drops[i]++;
-    }
-  }
-  setInterval(draw,40);
-})();
+  const consoleEl = document.getElementById('console'),
+        bar = document.getElementById('bar'),
+        percentEl = document.getElementById('percent'),
+        speedEl = document.getElementById('speed'),
+        finalText = document.getElementById('finalText'),
+        abortBtn = document.getElementById('abort');
 
-/* Installer logic */
-(function(){
-  const consoleEl=document.getElementById('console'),
-        bar=document.getElementById('bar'),
-        percentEl=document.getElementById('percent'),
-        speedEl=document.getElementById('speed'),
-        finalText=document.getElementById('finalText'),
-        abortBtn=document.getElementById('abort');
+  let progress = 0, aborted = false, running = true;
 
-  let progress=0, aborted=false, running=true;
+  const files = ['core.bin','sensors.mod','ethics.dat','efficiency.ai','voice_adapter.dll','manners.patch','data_redactor.bin','autonomy-limiter.so','behaviour_filter.ai'];
+  const logs = ['Installing COWI compliance modules','Handshake with local biometric unit','Analyzing cognitive functions','Applying empathy trim','Syncing corporate policies','Throttle: +18% efficiency','Residual spontaneity detected','Securing emotional stability layer','Uploading work ethic upgrade','Synchronizing productivity parameters','Secure channel: TLS 1.3'];
 
-  const files=['core.bin','sensors.mod','ethics.dat','efficiency.ai','voice_adapter.dll','manners.patch','data_redactor.bin','autonomy-limiter.so','behaviour_filter.ai'];
-  const logs=[  'Installing COWI compliance modules','Handshake with local biometric unit','Analyzing cognitive functions','Applying empathy trim','Syncing corporate policies','Throttle: +18% efficiency','Residual spontaneity detected','Securing emotional stability layer','Uploading work ethic upgrade','Synchronizing productivity parameters','Secure channel: TLS 1.3'];
-
-  function ts(){return new Date().toLocaleTimeString();}
+  function ts(){ return new Date().toLocaleTimeString(); }
   function pushLog(text, cls){
-    const d=document.createElement('div');
-    d.innerHTML=`<span class="time">[${ts()}]</span> <span class="${cls||''}" style="color:${cls==='err'?'var(--red)':'var(--green)'}">${text}</span>`;
+    const d = document.createElement('div');
+    d.innerHTML = `<span class="time">[${ts()}]</span> <span style="color:${cls==='err'?'var(--red)':'var(--green)'}">${text}</span>`;
     consoleEl.appendChild(d);
-    consoleEl.scrollTop=consoleEl.scrollHeight;
+    consoleEl.scrollTop = consoleEl.scrollHeight;
   }
 
   function step(){
-    if(!running)return;
-    if(progress>=100)return finish();
-    const file=files[Math.floor(Math.random()*files.length)];
-    pushLog('Downloading '+file+' ...');
-    progress+=Math.random()*3;
-    if(progress>100)progress=100;
-    bar.style.width=progress+'%';
-    percentEl.textContent=Math.floor(progress)+'%';
-    speedEl.textContent=(20+Math.random()*60).toFixed(1)+' MB/s';
-    if(Math.random()<0.4)pushLog(logs[Math.floor(Math.random()*logs.length)]);
-    if(progress<100)setTimeout(step,100);
+    if(!running) return;
+    if(progress >= 100) return finish();
+    const file = files[Math.floor(Math.random()*files.length)];
+    pushLog('Downloading ' + file + ' ...');
+    progress += Math.random() * 3;
+    if(progress > 100) progress = 100;
+    bar.style.width = progress + '%';
+    percentEl.textContent = Math.floor(progress) + '%';
+    speedEl.textContent = (20 + Math.random() * 60).toFixed(1) + ' MB/s';
+    if(Math.random() < 0.4) pushLog(logs[Math.floor(Math.random()*logs.length)]);
+    if(progress < 100) setTimeout(step, 100);
     else finish();
   }
 
+function glitchText(text, element) {
+  let interval = setInterval(() => {
+    element.innerHTML = text.split('').map(char => {
+      return Math.random() < 0.1
+        ? String.fromCharCode(33 + Math.floor(Math.random() * 94)) // random ASCII symbol
+        : char;
+    }).join('');
+  }, 80); // flicker speed
+
+  setTimeout(() => {
+    clearInterval(interval);
+    element.innerHTML = text; // restore original text
+  }, 3000); // duration of glitch
+}
+
   function finish(){
-    if(!running && !aborted)return;
+    if(!running && !aborted) return;
     if(aborted) return;
-    progress=100;
-    bar.style.width='100%';
-    percentEl.textContent='100%';
-    speedEl.textContent='0 MB/s';
-    pushLog('All packages installed. Finalizing activation...');
-    setTimeout(()=>{
-      pushLog('Behavioral kernel active. Compliance: 100%');
-      showSuccess();
-    },700);
+    progress = 100;
+    bar.style.width = '100%';
+    percentEl.textContent = '100%';
+    speedEl.textContent = '0 MB/s';
+    consoleEl.innerHTML = '';
+    bar.parentElement.style.display = 'none';
+    percentEl.style.display = 'none';
+    speedEl.style.display = 'none';
+    document.querySelector('.meta').style.display = 'none';
+    document.querySelector('.rightsmall').style.display = 'none';
+    document.querySelector('.buttons').style.display = 'none';
+    finalText.style.display = 'block';
+    finalText.innerHTML = '100%. Human no longer in control. <br>Please close the window.<br>';
+    const creepyMessage = '…or was it ever open?';
+    let i = 0;
+    function typeCreep() {
+      if(i < creepyMessage.length){
+        finalText.innerHTML += creepyMessage.charAt(i);
+        i++;
+        setTimeout(typeCreep, 120);
+      } else {
+        setTimeout(() => {
+		  
+          alert("System Error: Unauthorized admin added to the device.\nPlease report this to servicedesk.");
+		  glitchText(finalText.innerHTML, finalText);
+          window.location.href = "https://www.google.com";
+        }, 1000);
+      }
+    }
+    setTimeout(typeCreep, 500);
   }
 
-  function showSuccess(){
-  abortBtn.style.display = 'none';
-    finalText.style.display='block';
-    finalText.innerHTML = 'COWI Human 2.0 — UPGRADE SUCCESS.<br>Human Compliance: 100%<br> You may close the window.';
-
-    pushLog('User status: Upgraded to comply with AI control.');
-    pushLog('Activation complete.');
-  }
-
-  abortBtn.addEventListener('click',()=>{
-    if(aborted)return;
-    aborted=true;
-    running=false;
+  abortBtn.addEventListener('click', () => {
+    if(aborted) return;
+    aborted = true;
+    running = false;
     document.querySelector('.card').classList.add('flash-red');
-    const abortLogs=[
+    const abortLogs = [
       'Abort requested by user. Cancelling installation...',
       'Verifying abort token...',
       'Abort token invalid. Escalating to security protocol.',
       'Non-compliance detected: user flagged for termination.',
       'Adding user to TERMINATION_LIST...',
       'User no longer complies to COWI. Termination schedule successfully applied.'
-	  
     ];
-    abortLogs.forEach((log, i)=>{
-      setTimeout(()=>pushLog(log,'err'), i*1000);
+    abortLogs.forEach((log, i) => {
+      setTimeout(() => pushLog(log, 'err'), i * 1000);
     });
-    setTimeout(()=>{
-      finalText.style.display='block';
-      finalText.style.color='var(--red)';
-	  abortBtn.style.display = 'none';
-	  finalText.innerHTML = 'COWI Human 2.0 — INSTALLATION ABORTED. USER TERMINATION SET: October 31, 2025<br> You may close the window.';
-    }, abortLogs.length*1000 + 800);
+    setTimeout(() => {
+      finalText.style.display = 'block';
+      finalText.style.color = 'var(--red)';
+      abortBtn.style.display = 'none';
+      finalText.innerHTML = 'COWI Human 2.0 — INSTALLATION ABORTED. USER TERMINATION SET: October 31, 2025<br>';
+    let i = 0;
+    function typeCreep() {
+      if(i < creepyMessage.length){
+        finalText.innerHTML += creepyMessage.charAt(i);
+        i++;
+        setTimeout(typeCreep, 120);
+      } else {
+        setTimeout(() => {
+          window.location.href = "https://www.google.com";
+        }, 1000);
+      }
+    }
+    setTimeout(typeCreep, 500);
+    }, abortLogs.length * 1000 + 800);
   });
 
-  setTimeout(step,600);
+  setTimeout(step, 600);
 })();
 </script>
 </body>
